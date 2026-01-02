@@ -10,6 +10,20 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Core Problem**: Current tools (PowerPoint, whiteboard, Excel) take too long to prepare, produce static images that don't convey movement and timing
 **Core Value**: Show "current state" vs "recommended state" with movement and timing to make the case for change visually undeniable
 
+## Repository
+
+**GitHub**: https://github.com/bramschonenberg3888/warehouse-flow-visualization
+
+```bash
+# Clone the repository
+git clone https://github.com/bramschonenberg3888/warehouse-flow-visualization.git
+
+# After making changes, commit and push
+git add .
+git commit -m "Description of changes"
+git push
+```
+
 ## Core Philosophy
 
 - **Explain, don't simulate** - This is NOT a simulation tool
