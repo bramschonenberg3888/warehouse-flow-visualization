@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Warehouse Flow Visualization App** - A lightweight visual tool to explain logistics flows in warehouses. The app visualizes stories, it doesn't simulate or optimize.
 
-**Live Demo**: https://prototypev2-lilac.vercel.app
+**Live Demo**: https://warehouseflowvisualizationapp.vercel.app
 
 **Target User**: Logistics consultant explaining warehouse concepts to clients
 **Core Problem**: Current tools (PowerPoint, whiteboard, Excel) take too long to prepare, produce static images that don't convey movement and timing
@@ -142,7 +142,6 @@ Working prototype with programmatic grid rendering:
 ### Phase 2: Multi-Scenario with Excalidraw Editor (PLANNED - 2025-01-04)
 Major feature: Transform app from single hardcoded scenario to full scenario management.
 
-**Plan file**: `.claude/plans/rosy-moseying-seahorse.md`
 **ADRs**: ADR-015, ADR-016, ADR-017, ADR-018
 
 #### Implementation Phases:
