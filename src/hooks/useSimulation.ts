@@ -4,6 +4,7 @@ import {
   generatePath,
   getPositionAlongPath,
   getPathDuration,
+  getPathLength,
   shuffleArray,
   Point,
 } from '../utils/pathfinding';
@@ -14,6 +15,8 @@ interface UseSimulationResult {
   start: () => void;
   stop: () => void;
   reset: () => void;
+  speed: number;
+  setSpeed: (speed: number) => void;
 }
 
 export function useSimulation(gridData: GridData | null): UseSimulationResult {
@@ -25,7 +28,18 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
     pallets: [],
     docks: [],
     currentPalletIndex: 0,
+    totalDistancePx: 0,
   });
+
+  // Speed state
+  const [speed, setSpeedState] = useState(1.0);
+  const speedRef = useRef(1.0);
+
+  const setSpeed = useCallback((newSpeed: number) => {
+    const clampedSpeed = Math.max(0.5, Math.min(2.0, newSpeed));
+    speedRef.current = clampedSpeed;
+    setSpeedState(clampedSpeed);
+  }, []);
 
   // Use refs for animation state to avoid re-renders during animation
   const animationFrameRef = useRef<number | null>(null);
@@ -38,6 +52,7 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
   const palletsRef = useRef<Pallet[]>([]);
   const docksRef = useRef<Dock[]>([]);
   const lastRenderTimeRef = useRef<number>(0);
+  const totalDistanceRef = useRef<number>(0);
   const RENDER_INTERVAL = 33; // ~30fps for React state updates
 
   // Initialize pallets and docks from grid data
@@ -74,6 +89,7 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
     palletsRef.current = pallets;
     docksRef.current = docks;
     currentPalletIndexRef.current = 0;
+    totalDistanceRef.current = 0;
 
     setState({
       isRunning: false,
@@ -83,6 +99,7 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
       pallets,
       docks,
       currentPalletIndex: 0,
+      totalDistancePx: 0,
     });
   }, [gridData]);
 
@@ -113,6 +130,7 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
         pallets: [...pallets],
         docks: [...docks],
         currentPalletIndex: currentIndex,
+        totalDistancePx: totalDistanceRef.current,
       });
       return;
     }
@@ -127,7 +145,7 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
         { x: targetDock.x, y: targetDock.y }
       );
       currentPathRef.current = path;
-      pathDurationRef.current = getPathDuration(path);
+      pathDurationRef.current = getPathDuration(path, speedRef.current);
       palletStartTimeRef.current = timestamp;
 
       pallets[currentIndex] = {
@@ -152,6 +170,10 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
 
     // If pallet has arrived, mark it and move to next
     if (progress >= 1) {
+      // Accumulate distance traveled
+      const pathDistance = getPathLength(currentPathRef.current);
+      totalDistanceRef.current += pathDistance;
+
       pallets[currentIndex] = {
         ...pallets[currentIndex],
         x: targetDock.x,
@@ -179,6 +201,7 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
         pallets: [...pallets],
         docks: [...docks],
         currentPalletIndex: currentPalletIndexRef.current,
+        totalDistancePx: totalDistanceRef.current,
       });
     }
 
@@ -236,6 +259,13 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
       animationFrameRef.current = null;
     }
 
+    // Reset speed to default
+    speedRef.current = 1.0;
+    setSpeedState(1.0);
+
+    // Reset distance
+    totalDistanceRef.current = 0;
+
     if (!gridData) return;
 
     // Reshuffle and reinitialize
@@ -275,6 +305,7 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
       pallets,
       docks,
       currentPalletIndex: 0,
+      totalDistancePx: 0,
     });
   }, [gridData]);
 
@@ -288,5 +319,5 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
     };
   }, []);
 
-  return { state, start, stop, reset };
+  return { state, start, stop, reset, speed, setSpeed };
 }

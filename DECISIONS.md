@@ -467,3 +467,130 @@ function getPathDuration(path: Point[]): number {
 - Paths are always valid (no infinite loops)
 - Animation speed is consistent (pixels/second, not cells/second)
 - Works with any start/end positions
+
+---
+
+## ADR-015: Multi-Scenario Architecture
+
+**Date**: 2025-01-04
+**Status**: Planned
+
+### Context
+The current app has a single hardcoded Excalidraw file and one fixed flow (15 pallets → 15 docks). To be useful for a consultant, the app needs to support multiple warehouse layouts for different clients/situations.
+
+### Decision
+Implement **multi-scenario support** with:
+1. `Scenario` as the root data entity (id, name, tags, excalidrawData, flows)
+2. Flat list organization with tags/search for filtering
+3. State-based navigation (list/editor/simulation modes) instead of React Router
+4. Continue using React useState + custom hooks (no Zustand yet)
+
+### Rationale
+- State-based navigation is simpler for 3 screens
+- useState + hooks sufficient for current complexity (YAGNI)
+- Flat list matches consultant workflow better than hierarchical folders
+- Can add Zustand/Router later if needed
+
+### Consequences
+- Need new UI for scenario management (list, create, edit, delete)
+- Existing simulation code needs refactoring to accept scenario data
+- Current prototype becomes a "sample scenario" in the new structure
+
+---
+
+## ADR-016: Embedded Excalidraw Editor
+
+**Date**: 2025-01-04
+**Status**: Planned
+
+### Context
+Currently, users must create layouts in external Excalidraw app and import. This is friction. The app should allow creating/editing grids directly.
+
+### Decision
+Embed **@excalidraw/excalidraw** React component as a controlled component:
+- App owns the data (elements, appState)
+- Excalidraw handles the editing UI
+- Changes flow back via `onChange` callback for auto-save
+
+### Rationale
+- Controlled approach enables auto-save to localStorage
+- App can parse elements for simulation
+- Matches existing data flow patterns
+- Alternative (uncontrolled) risks user losing unsaved work
+
+### Consequences
+- New dependency: `@excalidraw/excalidraw`
+- Bundle size increases (Excalidraw is ~500KB gzipped)
+- Consider lazy-loading editor component
+
+---
+
+## ADR-017: Hybrid Storage Strategy
+
+**Date**: 2025-01-04
+**Status**: Planned
+
+### Context
+Need to persist scenarios. Options: localStorage only, file export only, cloud backend.
+
+### Decision
+Use **hybrid approach**:
+1. **localStorage** for auto-save (debounced 1 second)
+2. **File export/import** for archiving and sharing
+
+### Rationale
+- localStorage alone: can't share, tied to browser
+- Files alone: manual save = risk of data loss
+- Hybrid: zero-friction auto-save + portable sharing
+- No backend complexity needed
+
+### Implementation
+- Storage key: `warehouse-flow-viz`
+- Export formats: single scenario (`.wfv.json`) or full backup
+- Import: detect format, handle duplicates
+
+### Consequences
+- ~5-10MB localStorage limit (sufficient for many scenarios)
+- User must export to share with others
+- Can add cloud sync later without breaking local workflow
+
+---
+
+## ADR-018: Element Library System
+
+**Date**: 2025-01-04
+**Status**: Planned
+
+### Context
+Users need to build warehouse layouts quickly. Predefined zone templates and object types would speed this up.
+
+### Decision
+Create an **element library** with:
+1. **Zone templates**: Dock, Racking, Staging, Packing station (with predefined colors)
+2. **Object/MHE types**: Pallet, EPT, Reach Truck (with predefined speeds/colors)
+3. **Click-to-add** (not drag-and-drop) - simpler implementation
+
+### Zone Color Conventions
+| Zone | Color |
+|------|-------|
+| Loading Dock | `#e9ecef` (gray) |
+| Pallet Racking | `#ffe8cc` (orange) |
+| Staging Area | `#d3f9d8` (green) |
+| Packing Station | `#d0ebff` (blue) |
+
+### MHE Speed Conventions
+| Type | Speed |
+|------|-------|
+| Pallet | 0 (static) |
+| Electric Pallet Truck | 250 px/s (~2.5 m/s) |
+| Reach Truck | 180 px/s (~1.8 m/s) |
+
+### Rationale
+- Color-based zone identification already works in current parser
+- Element library ensures users pick correct colors
+- Click-to-add is simpler than drag-and-drop (can enhance later)
+
+### Consequences
+- Parser must support new zone types
+- Library panel added to Excalidraw sidebar
+- Custom objects/zones can be added by users

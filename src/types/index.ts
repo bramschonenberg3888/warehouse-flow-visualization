@@ -29,6 +29,7 @@ export interface SimulationState {
   pallets: Pallet[];
   docks: Dock[];
   currentPalletIndex: number;
+  totalDistancePx: number;
 }
 
 export interface GridData {

@@ -12,15 +12,19 @@ const COORD_COLOR = '#ced4da';
 const DOCK_FILL = '#e9ecef';
 const PALLET_FILL = '#d2bab0';
 const PALLET_STROKE = '#a89080';
+const PALLET_ACTIVE_FILL = '#ffeb3b';
+const PALLET_ACTIVE_STROKE = '#fbc02d';
+const PALLET_ACTIVE_GLOW = 'rgba(255, 200, 0, 0.4)';
 const BACKGROUND = '#ffffff';
 
 interface GridCanvasProps {
   gridData: GridData | null;
   pallets: Pallet[];
   docks: Dock[];
+  currentPalletIndex: number;
 }
 
-export function GridCanvas({ gridData, pallets, docks }: GridCanvasProps) {
+export function GridCanvas({ gridData, pallets, docks, currentPalletIndex }: GridCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -115,23 +119,31 @@ export function GridCanvas({ gridData, pallets, docks }: GridCanvasProps) {
     });
 
     // Draw active/moving pallets
-    pallets.forEach((pallet) => {
-      ctx.fillStyle = PALLET_FILL;
-      ctx.fillRect(
-        pallet.x + offsetX + PALLET_OFFSET,
-        pallet.y + offsetY + PALLET_OFFSET,
-        PALLET_SIZE,
-        PALLET_SIZE
-      );
-      ctx.strokeStyle = PALLET_STROKE;
-      ctx.strokeRect(
-        pallet.x + offsetX + PALLET_OFFSET,
-        pallet.y + offsetY + PALLET_OFFSET,
-        PALLET_SIZE,
-        PALLET_SIZE
-      );
+    pallets.forEach((pallet, index) => {
+      const isCurrentPallet = index === currentPalletIndex && pallet.isMoving;
+      const x = pallet.x + offsetX + PALLET_OFFSET;
+      const y = pallet.y + offsetY + PALLET_OFFSET;
+
+      // Draw glow effect for current pallet
+      if (isCurrentPallet) {
+        ctx.shadowColor = PALLET_ACTIVE_GLOW;
+        ctx.shadowBlur = 15;
+        ctx.shadowOffsetX = 0;
+        ctx.shadowOffsetY = 0;
+      }
+
+      ctx.fillStyle = isCurrentPallet ? PALLET_ACTIVE_FILL : PALLET_FILL;
+      ctx.fillRect(x, y, PALLET_SIZE, PALLET_SIZE);
+
+      // Reset shadow before stroke
+      ctx.shadowBlur = 0;
+
+      ctx.strokeStyle = isCurrentPallet ? PALLET_ACTIVE_STROKE : PALLET_STROKE;
+      ctx.lineWidth = isCurrentPallet ? 2 : 1;
+      ctx.strokeRect(x, y, PALLET_SIZE, PALLET_SIZE);
+      ctx.lineWidth = 1;
     });
-  }, [gridData, pallets, docks]);
+  }, [gridData, pallets, docks, currentPalletIndex]);
 
   return (
     <canvas

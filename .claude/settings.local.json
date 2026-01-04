@@ -7,7 +7,13 @@
       "Bash(npm install)",
       "Bash(npx tsc:*)",
       "Bash(npm run dev:*)",
-      "Bash(git --version:*)"
+      "Bash(git --version:*)",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(npm run build:*)",
+      "WebSearch",
+      "WebFetch(domain:docs.excalidraw.com)",
+      "Bash(git add:*)"
     ]
   }
 }

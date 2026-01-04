@@ -139,19 +139,51 @@ Working prototype with programmatic grid rendering:
 - Speed control slider
 - Path visualization
 
-### Phase 2: Serious App
-- Multiple scenarios per project
+### Phase 2: Multi-Scenario with Excalidraw Editor (PLANNED - 2025-01-04)
+Major feature: Transform app from single hardcoded scenario to full scenario management.
+
+**Plan file**: `.claude/plans/rosy-moseying-seahorse.md`
+**ADRs**: ADR-015, ADR-016, ADR-017, ADR-018
+
+#### Implementation Phases:
+1. **Foundation** - Multi-scenario support with localStorage
+   - Extend data model (Scenario, ObjectType, ZoneTemplate)
+   - Create `useStorage` hook with auto-save
+   - Scenario list UI (CRUD, search, tags)
+
+2. **Excalidraw Editor** - Edit grids in-app
+   - Add `@excalidraw/excalidraw` dependency
+   - Embedded editor with controlled component pattern
+   - Mode switching (list/editor/simulation)
+
+3. **Element Library** - Zone templates + MHE types
+   - Default library (Dock, Racking, Staging, Packing)
+   - MHE types (Pallet, EPT, Reach Truck with speeds)
+   - Click-to-add panel in editor
+
+4. **File Export/Import** - Share and archive
+   - Export single scenario (`.wfv.json`)
+   - Export full backup
+   - Import with conflict handling
+
+5. **Polish** - Tags, search, thumbnails
+
+#### Key Decisions:
+- State-based navigation (no React Router)
+- React useState + hooks (no Zustand yet)
+- Hybrid storage: localStorage auto-save + file export
+- Controlled Excalidraw component for auto-save
+
+### Phase 3: Serious App (FUTURE)
 - Side-by-side comparison view
 - Different object types with speeds
 - Pause/wait at waypoints
-- Save/load scenarios
+- User-defined flow paths
 
 ## Commands
 
 ```bash
-# Prototype V2
-cd "prototype v2"
-npm install
+npm install      # Install dependencies
 npm run dev      # Start dev server (http://localhost:5173)
 npm run build    # Production build
 ```
@@ -165,28 +197,28 @@ warehouse_flow_visualization_app/
 ├── SESSION_LOG.md               # Where we left off each session
 ├── DECISIONS.md                 # Key decisions and rationale (ADR-001 to ADR-014)
 ├── Conceptueel Flow-Model (Basis).md  # Original concept (Dutch)
+├── package.json                 # Project dependencies and scripts
+├── index.html                   # Entry HTML file
+├── vite.config.ts               # Vite configuration
+├── tsconfig.json                # TypeScript configuration
 ├── .claude/
 │   └── agents/                  # Custom Claude Code agents
 │       ├── product-manager.md
 │       ├── ux-designer.md
 │       ├── logistics-domain-expert.md
 │       └── frontend-engineer.md
-├── prototype/                   # Phase 0 prototype (PNG background - deprecated)
-│   ├── src/
-│   └── package.json
-├── prototype v2/                # CURRENT - Programmatic grid prototype
-│   ├── src/
-│   │   ├── types/index.ts           # TypeScript interfaces
-│   │   ├── utils/parseExcalidraw.ts # Excalidraw JSON parser
-│   │   ├── utils/pathfinding.ts     # Manhattan paths, lerp
-│   │   ├── hooks/useSimulation.ts   # Animation state management
-│   │   ├── components/GridCanvas.tsx
-│   │   ├── components/Controls.tsx
-│   │   └── App.tsx
-│   ├── public/
-│   │   └── prototype v2.excalidraw  # Grid source file
-│   └── package.json
-└── src/                         # (Future) Main application source code
+├── src/                         # Main application source code
+│   ├── types/index.ts           # TypeScript interfaces
+│   ├── utils/parseExcalidraw.ts # Excalidraw JSON parser
+│   ├── utils/pathfinding.ts     # Manhattan paths, lerp
+│   ├── hooks/useSimulation.ts   # Animation state management
+│   ├── components/GridCanvas.tsx
+│   ├── components/Controls.tsx
+│   └── App.tsx
+├── public/
+│   └── prototype v2.excalidraw  # Grid source file
+└── archive/                     # Archived prototypes
+    └── prototype_v1_deprecated/ # Phase 0 prototype (PNG background)
 ```
 
 ## Example Use Cases
