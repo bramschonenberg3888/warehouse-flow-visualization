@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **Warehouse Flow Visualization App** - A lightweight visual tool to explain logistics flows in warehouses. The app visualizes stories, it doesn't simulate or optimize.
 
+**Live Demo**: https://prototypev2-lilac.vercel.app
+
 **Target User**: Logistics consultant explaining warehouse concepts to clients
 **Core Problem**: Current tools (PowerPoint, whiteboard, Excel) take too long to prepare, produce static images that don't convey movement and timing
 **Core Value**: Show "current state" vs "recommended state" with movement and timing to make the case for change visually undeniable
