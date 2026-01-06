@@ -184,41 +184,63 @@ Major feature: Transform app from single hardcoded scenario to full scenario man
 ```bash
 npm install      # Install dependencies
 npm run dev      # Start dev server (http://localhost:5173)
-npm run build    # Production build
+npm run build    # Production build (includes TypeScript check)
 ```
 
-## File Structure
+## Code Quality - Zero Tolerance
+
+After editing ANY file, run:
+
+```bash
+npm run build
+```
+
+This runs `tsc && vite build` which:
+1. TypeScript type-checking (catches type errors)
+2. Vite production build (catches build issues)
+
+Fix ALL errors before continuing. If the dev server is running, also check console for runtime warnings.
+
+## Project Structure
 
 ```
-warehouse_flow_visualization_app/
-├── CLAUDE.md                    # This file - guidance for Claude
-├── CHANGELOG.md                 # Version history
-├── SESSION_LOG.md               # Where we left off each session
-├── DECISIONS.md                 # Key decisions and rationale (ADR-001 to ADR-014)
-├── Conceptueel Flow-Model (Basis).md  # Original concept (Dutch)
-├── package.json                 # Project dependencies and scripts
-├── index.html                   # Entry HTML file
-├── vite.config.ts               # Vite configuration
-├── tsconfig.json                # TypeScript configuration
-├── .claude/
-│   └── agents/                  # Custom Claude Code agents
-│       ├── product-manager.md
-│       ├── ux-designer.md
-│       ├── logistics-domain-expert.md
-│       └── frontend-engineer.md
-├── src/                         # Main application source code
-│   ├── types/index.ts           # TypeScript interfaces
-│   ├── utils/parseExcalidraw.ts # Excalidraw JSON parser
-│   ├── utils/pathfinding.ts     # Manhattan paths, lerp
-│   ├── hooks/useSimulation.ts   # Animation state management
-│   ├── components/GridCanvas.tsx
-│   ├── components/Controls.tsx
-│   └── App.tsx
-├── public/
+├── src/
+│   ├── components/          # React components
+│   │   ├── GridCanvas.tsx   # Main canvas rendering
+│   │   ├── Controls.tsx     # Play/Stop controls
+│   │   └── Legend.tsx       # Color legend
+│   ├── hooks/               # Custom React hooks
+│   │   └── useSimulation.ts # Animation state management
+│   ├── types/               # TypeScript type definitions
+│   │   └── index.ts         # Interfaces for Grid, Pallet, etc.
+│   ├── utils/               # Pure utility functions
+│   │   ├── parseExcalidraw.ts  # Excalidraw JSON parser
+│   │   └── pathfinding.ts      # Manhattan paths, lerp
+│   ├── App.tsx              # Root component
+│   └── main.tsx             # Entry point
+├── public/                  # Static assets
 │   └── prototype v2.excalidraw  # Grid source file
-└── archive/                     # Archived prototypes
-    └── prototype_v1_deprecated/ # Phase 0 prototype (PNG background)
+├── .claude/agents/          # Custom Claude Code agents
+├── archive/                 # Deprecated prototypes
+├── index.html               # HTML entry
+├── vite.config.ts           # Vite configuration
+├── tsconfig.json            # TypeScript configuration
+├── DECISIONS.md             # Architecture Decision Records (ADR-001 to ADR-014)
+└── SESSION_LOG.md           # Session progress tracking
 ```
+
+## Organization Rules
+
+**Keep code organized and modularized:**
+- Components → `src/components/`, one component per file
+- Hooks → `src/hooks/`, one hook per file
+- Utilities → `src/utils/`, grouped by functionality
+- Types → `src/types/`, centralized type definitions
+
+**Modularity principles:**
+- Single responsibility per file
+- Clear, descriptive file names
+- No monolithic files
 
 ## Example Use Cases
 

@@ -13,7 +13,17 @@
       "Bash(npm run build:*)",
       "WebSearch",
       "WebFetch(domain:docs.excalidraw.com)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)",
+      "Bash(cat:*)",
+      "Bash(vercel --version:*)",
+      "Bash(vercel inspect:*)",
+      "Bash(vercel:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run check:*)",
+      "Bash(npm run typecheck:*)",
+      "Bash(npm run lint:*)"
     ]
   }
 }
