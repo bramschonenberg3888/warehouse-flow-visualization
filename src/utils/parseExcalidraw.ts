@@ -1,6 +1,6 @@
 import { GridData, GridCell } from '../types';
 
-interface ExcalidrawElement {
+export interface ExcalidrawElement {
   id: string;
   type: string;
   x: number;
@@ -9,6 +9,7 @@ interface ExcalidrawElement {
   height: number;
   backgroundColor: string;
   isDeleted: boolean;
+  [key: string]: unknown; // Allow additional Excalidraw properties
 }
 
 interface ExcalidrawFile {
@@ -88,4 +89,20 @@ export async function loadExcalidrawFile(path: string): Promise<GridData> {
   const response = await fetch(path);
   const data: ExcalidrawFile = await response.json();
   return parseExcalidrawData(data);
+}
+
+/**
+ * Load raw Excalidraw elements from file (for use with embedded editor)
+ */
+export async function loadExcalidrawElements(path: string): Promise<ExcalidrawElement[]> {
+  const response = await fetch(path);
+  const data: ExcalidrawFile = await response.json();
+  return data.elements;
+}
+
+/**
+ * Parse raw Excalidraw elements into GridData (for simulation)
+ */
+export function parseElements(elements: ExcalidrawElement[]): GridData {
+  return parseExcalidrawData({ elements });
 }

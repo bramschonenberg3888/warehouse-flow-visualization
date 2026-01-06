@@ -42,6 +42,38 @@ body {
   color: #333;
 }
 
+/* Mode toggle buttons */
+.mode-toggle {
+  display: flex;
+  gap: 4px;
+  background: #f0f0f0;
+  padding: 4px;
+  border-radius: 8px;
+}
+
+.mode-btn {
+  padding: 8px 16px;
+  border: none;
+  background: transparent;
+  color: #666;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.mode-btn:hover {
+  color: #333;
+  background: #e0e0e0;
+}
+
+.mode-btn.active {
+  background: white;
+  color: #333;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
 .status {
   display: flex;
   gap: 24px;
@@ -81,4 +113,35 @@ body {
   background: white;
   padding: 16px 24px;
   border-top: 1px solid #ddd;
+}
+
+/* Excalidraw editor wrapper */
+.excalidraw-wrapper {
+  width: 100%;
+  height: calc(100vh - 140px);
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+.save-layout-btn {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  padding: 12px 24px;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100;
+  transition: background 0.2s ease;
+}
+
+.save-layout-btn:hover {
+  background: #45a049;
 }

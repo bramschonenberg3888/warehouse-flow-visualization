@@ -8,7 +8,13 @@ import {
   shuffleArray,
   Point,
 } from '../utils/pathfinding';
-const NUM_PALLETS_TO_MOVE = 15;
+import {
+  NUM_PALLETS_TO_MOVE,
+  MIN_SPEED,
+  MAX_SPEED,
+  DEFAULT_SPEED,
+  RENDER_INTERVAL,
+} from '../config';
 
 interface UseSimulationResult {
   state: SimulationState;
@@ -32,11 +38,11 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
   });
 
   // Speed state
-  const [speed, setSpeedState] = useState(1.0);
-  const speedRef = useRef(1.0);
+  const [speed, setSpeedState] = useState(DEFAULT_SPEED);
+  const speedRef = useRef(DEFAULT_SPEED);
 
   const setSpeed = useCallback((newSpeed: number) => {
-    const clampedSpeed = Math.max(0.5, Math.min(2.0, newSpeed));
+    const clampedSpeed = Math.max(MIN_SPEED, Math.min(MAX_SPEED, newSpeed));
     speedRef.current = clampedSpeed;
     setSpeedState(clampedSpeed);
   }, []);
@@ -53,7 +59,6 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
   const docksRef = useRef<Dock[]>([]);
   const lastRenderTimeRef = useRef<number>(0);
   const totalDistanceRef = useRef<number>(0);
-  const RENDER_INTERVAL = 33; // ~30fps for React state updates
 
   // Initialize pallets and docks from grid data
   useEffect(() => {
@@ -260,8 +265,8 @@ export function useSimulation(gridData: GridData | null): UseSimulationResult {
     }
 
     // Reset speed to default
-    speedRef.current = 1.0;
-    setSpeedState(1.0);
+    speedRef.current = DEFAULT_SPEED;
+    setSpeedState(DEFAULT_SPEED);
 
     // Reset distance
     totalDistanceRef.current = 0;

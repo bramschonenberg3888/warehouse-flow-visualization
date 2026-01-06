@@ -1,21 +1,13 @@
 import { useRef, useEffect } from 'react';
 import { GridData, Pallet, Dock } from '../types';
-
-const CELL_SIZE = 40;
-const PALLET_SIZE = 30;
-const PALLET_OFFSET = (CELL_SIZE - PALLET_SIZE) / 2;
-const COORD_MARGIN = 30; // Space for coordinate labels
-
-// Colors
-const GRID_STROKE = '#ced4da';
-const COORD_COLOR = '#ced4da';
-const DOCK_FILL = '#e9ecef';
-const PALLET_FILL = '#d2bab0';
-const PALLET_STROKE = '#a89080';
-const PALLET_ACTIVE_FILL = '#ffeb3b';
-const PALLET_ACTIVE_STROKE = '#fbc02d';
-const PALLET_ACTIVE_GLOW = 'rgba(255, 200, 0, 0.4)';
-const BACKGROUND = '#ffffff';
+import {
+  CELL_SIZE,
+  PALLET_SIZE,
+  PALLET_OFFSET,
+  COORD_MARGIN,
+  CANVAS_PADDING,
+  COLORS,
+} from '../config';
 
 interface GridCanvasProps {
   gridData: GridData | null;
@@ -36,27 +28,26 @@ export function GridCanvas({ gridData, pallets, docks, currentPalletIndex }: Gri
 
     // Calculate canvas size from grid bounds
     const { bounds } = gridData;
-    const padding = 20;
-    const width = bounds.maxX - bounds.minX + padding * 2 + COORD_MARGIN;
-    const height = bounds.maxY - bounds.minY + padding * 2 + COORD_MARGIN;
+    const width = bounds.maxX - bounds.minX + CANVAS_PADDING * 2 + COORD_MARGIN;
+    const height = bounds.maxY - bounds.minY + CANVAS_PADDING * 2 + COORD_MARGIN;
 
     canvas.width = width;
     canvas.height = height;
 
     // Clear canvas
-    ctx.fillStyle = BACKGROUND;
+    ctx.fillStyle = COLORS.background;
     ctx.fillRect(0, 0, width, height);
 
     // Offset for drawing (translate grid to start at padding + margin for labels)
-    const offsetX = padding - bounds.minX + COORD_MARGIN;
-    const offsetY = padding - bounds.minY + COORD_MARGIN;
+    const offsetX = CANVAS_PADDING - bounds.minX + COORD_MARGIN;
+    const offsetY = CANVAS_PADDING - bounds.minY + COORD_MARGIN;
 
     // Calculate grid dimensions in cells
     const gridWidthCells = Math.round((bounds.maxX - bounds.minX) / CELL_SIZE);
     const gridHeightCells = Math.round((bounds.maxY - bounds.minY) / CELL_SIZE);
 
     // Draw coordinate labels
-    ctx.fillStyle = COORD_COLOR;
+    ctx.fillStyle = COLORS.coordLabel;
     ctx.font = '14px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -64,20 +55,20 @@ export function GridCanvas({ gridData, pallets, docks, currentPalletIndex }: Gri
     // Horizontal letters (A, B, C, ...) at the top - columns
     for (let i = 0; i < gridWidthCells; i++) {
       const x = bounds.minX + i * CELL_SIZE + CELL_SIZE / 2 + offsetX;
-      const y = padding / 2 + COORD_MARGIN / 2;
+      const y = CANVAS_PADDING / 2 + COORD_MARGIN / 2;
       const letter = String.fromCharCode(65 + i); // A=65
       ctx.fillText(letter, x, y);
     }
 
     // Vertical numbers (1, 2, 3, ...) on the left - rows
     for (let i = 0; i < gridHeightCells; i++) {
-      const x = padding / 2 + COORD_MARGIN / 2;
+      const x = CANVAS_PADDING / 2 + COORD_MARGIN / 2;
       const y = bounds.minY + i * CELL_SIZE + CELL_SIZE / 2 + offsetY;
       ctx.fillText((i + 1).toString(), x, y);
     }
 
     // Draw empty cells
-    ctx.strokeStyle = GRID_STROKE;
+    ctx.strokeStyle = COLORS.gridStroke;
     ctx.lineWidth = 1;
     gridData.emptyCells.forEach((cell) => {
       ctx.strokeRect(
@@ -90,9 +81,9 @@ export function GridCanvas({ gridData, pallets, docks, currentPalletIndex }: Gri
 
     // Draw docks (grey background)
     docks.forEach((dock) => {
-      ctx.fillStyle = DOCK_FILL;
+      ctx.fillStyle = COLORS.dockFill;
       ctx.fillRect(dock.x + offsetX, dock.y + offsetY, CELL_SIZE, CELL_SIZE);
-      ctx.strokeStyle = GRID_STROKE;
+      ctx.strokeStyle = COLORS.gridStroke;
       ctx.strokeRect(dock.x + offsetX, dock.y + offsetY, CELL_SIZE, CELL_SIZE);
     });
 
@@ -102,14 +93,14 @@ export function GridCanvas({ gridData, pallets, docks, currentPalletIndex }: Gri
       const activePallet = pallets.find((p) => p.startX === cell.x && p.startY === cell.y);
       if (activePallet) return; // Will be drawn as moving pallet
 
-      ctx.fillStyle = PALLET_FILL;
+      ctx.fillStyle = COLORS.palletFill;
       ctx.fillRect(
         cell.x + offsetX + PALLET_OFFSET,
         cell.y + offsetY + PALLET_OFFSET,
         PALLET_SIZE,
         PALLET_SIZE
       );
-      ctx.strokeStyle = PALLET_STROKE;
+      ctx.strokeStyle = COLORS.palletStroke;
       ctx.strokeRect(
         cell.x + offsetX + PALLET_OFFSET,
         cell.y + offsetY + PALLET_OFFSET,
@@ -126,19 +117,19 @@ export function GridCanvas({ gridData, pallets, docks, currentPalletIndex }: Gri
 
       // Draw glow effect for current pallet
       if (isCurrentPallet) {
-        ctx.shadowColor = PALLET_ACTIVE_GLOW;
+        ctx.shadowColor = COLORS.palletActiveGlow;
         ctx.shadowBlur = 15;
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
       }
 
-      ctx.fillStyle = isCurrentPallet ? PALLET_ACTIVE_FILL : PALLET_FILL;
+      ctx.fillStyle = isCurrentPallet ? COLORS.palletActiveFill : COLORS.palletFill;
       ctx.fillRect(x, y, PALLET_SIZE, PALLET_SIZE);
 
       // Reset shadow before stroke
       ctx.shadowBlur = 0;
 
-      ctx.strokeStyle = isCurrentPallet ? PALLET_ACTIVE_STROKE : PALLET_STROKE;
+      ctx.strokeStyle = isCurrentPallet ? COLORS.palletActiveStroke : COLORS.palletStroke;
       ctx.lineWidth = isCurrentPallet ? 2 : 1;
       ctx.strokeRect(x, y, PALLET_SIZE, PALLET_SIZE);
       ctx.lineWidth = 1;

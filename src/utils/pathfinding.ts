@@ -1,9 +1,9 @@
+import { BASE_SPEED } from '../config';
+
 export interface Point {
   x: number;
   y: number;
 }
-
-const BASE_SPEED = 200; // pixels per second
 
 /**
  * Calculate Manhattan distance between two points
